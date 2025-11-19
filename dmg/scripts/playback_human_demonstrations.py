@@ -87,8 +87,7 @@ if __name__ == "__main__":
         env_info = json.loads(f["data"].attrs["env_args"])
         env_info = from_env_args_to_env_info(env_info)
     env_info["has_renderer"] = True
-    # env_info["controller_configs"]["control_delta"] = True
-    input(f"control delta: {env_info['controller_configs']['control_delta']}")
+    print(f"control delta: {env_info['controller_configs']['control_delta']}")
 
     env = robosuite.make(
         **env_info,

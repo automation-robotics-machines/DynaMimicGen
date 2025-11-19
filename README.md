@@ -75,23 +75,34 @@ The previous command will create a folder within the <dir-name> called dmp, in w
 # Record a new trajectory
 Alternatively, you can record a new trajectory on your own (more treaky procedure):
 ```bash
-python dmg/scripts/collect_human_demonstations.py --environment <env-name> # Collect human demo with space mouse
-source dmg/bash/prepare_dataset.sh <dir-name> # Convert to robomimic
-python dmg/scripts/annotate_subtasks.py -directory <dir-name> # Annotate subtasks manually
+# Collect human demo with space mouse
+python dmg/scripts/collect_human_demonstations.py --environment <env-name>
+# Convert to robomimic
+python robomimic/robomimic/scripts/conversion/convert_robosuite.py --dataset dmg/demos/hdf5/<dir-name>/demo.hdf5
+python robomimic/robomimic/scripts/dataset_states_to_obs.py        --dataset dmg/demos/hdf5/<dir-name>/demo.hdf5 --output_name image.hdf5 --done_mode 2 --camera_names agentview robot0_eye_in_hand --camera_height 84 --camera_width 84 --exclude-next-obs
+# Annotate subtasks manually
+python dmg/scripts/annotate_subtasks.py -directory <dir-name>
 ```
 
-# Normalize generated dataset
-
+# Extract generated dataset
 ```bash
-python dmg/scripts/normalize_dataset.py --directory StackThree_D0
+python robomimic/robomimic/scripts/conversion/convert_robosuite.py --dataset dmg/demos/hdf5/<dir-name>/dmp/demo.hdf5
+python robomimic/robomimic/scripts/dataset_states_to_obs.py        --dataset dmg/demos/hdf5/<dir-name>/dmp/demo.hdf5 --output_name image.hdf5 --done_mode 2 --camera_names agentview robot0_eye_in_hand --camera_height 84 --camera_width 84 --exclude-next-obs
 ```
 
 # Run training with Robomimic's Behavior Cloning
 ```bash
-python robomimic/robomimic/scripts/train.py --config dmg/demos/hdf5/<dir-name>/configs/low_dim/bc_rnn.json --abs-actions
+python robomimic/robomimic/scripts/train.py --config dmg/configs/<task-name>/bc_configs/image/bc_rnn.json # image
+python robomimic/robomimic/scripts/train.py --config dmg/configs/<task-name>/bc_configs/low_dim/bc_rnn.json # low-dim
+```
+
+# Run training with Robomimic's Diffusion Policy
+```bash
+python robomimic/robomimic/scripts/train.py --config dmg/configs/<task-name>/dp_configs/image/dp.json # image
+python robomimic/robomimic/scripts/train.py --config dmg/configs/<task-name>/dp_configs/low_dim/dp.json # low-dim
 ```
 
 # Evaluate trained agent
 ```bash
-source dmg/bash/run_trained_agents.sh <dir-name> <type> <ckpt-name> # StackThree_D0_new low_dim 1600
+source dmg/bash/run_trained.sh <dir-name> <type> <ckpt-name> <horizon> <folder_name> # example: source dmg/bash/run_trained_agents.sh Stack_D0_new low_dim 1600 700 20250723221119
 ```
