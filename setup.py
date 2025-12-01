@@ -49,10 +49,6 @@ setup(
     python_requires=">=3",
     description="DynaMimicGen: Synthetic dataset generation for manipulation tasks on the top of MuJoCo simulator.",
     version="1.0.0",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    author='Vincenzo Pomponi',
-    author_email='vincenzo.pomponi@supsi.ch',
     python_requires='>=3.8',
 )
 
