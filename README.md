@@ -2,7 +2,9 @@
   <img src="dmg_logo.png" width="180" alt="DynaMimicGen Logo">
 </p>
 
-<h1 align="center">DynaMimicGen (D-MG)</h1>
+<p align="center">
+  <img src="DMG_framework.png" width="1000" alt="DynaMimicGen Framework">
+</p>
 <h3 align="center">A Data Generation Framework for Robot Learning of Dynamic Tasks</h3>
 
 <p align="center">
