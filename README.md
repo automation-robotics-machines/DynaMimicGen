@@ -213,15 +213,13 @@ For reproducibility inquiries, please contact: **vincenzo.pomponi@supsi.ch**
 ---
 
 ## Citation
-
-If you use **DynaMimicGen** in your work, please cite:
+If you use **DynaMimicGen (D-MG)** or this code, please cite the paper:
 
 ```bibtex
 @article{pomponi2025dynamimicgen,
-  title     = {DynaMimicGen: A Data Generation Framework for Robot Learning of Dynamic Tasks},
-  author    = {Pomponi, Vincenzo and Franceschi, Paolo and Baraldo, Stefano and
-               Roveda, Loris and Avram, Oliver and Gambardella, Luca Maria and Valente, Anna},
-  journal   = {arXiv preprint arXiv:2511.16223},
-  year      = {2025}
+  title={DynaMimicGen: A Data Generation Framework for Robot Learning of Dynamic Tasks},
+  author={Pomponi, Vincenzo and Franceschi, Paolo and Baraldo, Stefano and Roveda, Loris and Avram, Oliver and Gambardella, Luca Maria and Valente, Anna},
+  journal={arXiv preprint arXiv:2511.16223},
+  year={2025}
 }
 ```
