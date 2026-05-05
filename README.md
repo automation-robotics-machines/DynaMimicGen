@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="dmg_logo.png" width="180" alt="DynaMimicGen Logo">
+  <img src="dmg_logo.png" width="1000" alt="DynaMimicGen Logo">
 </p>
 
 <h1 align="center">DynaMimicGen (D-MG)</h1>
