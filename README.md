@@ -1,108 +1,220 @@
-# DynaMimicGen
-DynaMimicGen: A Data Generation Framework for Robot Learning of Dynamic Tasks
-# Abstract
-Learning robust manipulation policies typically requires large and diverse datasets, the collection of which is time-consuming, labor-intensive, and often impractical for dynamic environments. In this work, we introduce DynaMimicGen (D-MG), a scalable dataset generation framework that enables policy training from minimal human supervision while uniquely supporting dynamic task settings. Given only a few human demonstrations, D-MG first segments the demonstrations into meaningful sub-tasks, then leverages Dynamic Movement Primitives (DMPs) to adapt and generalize the demonstrated behaviors to novel and dynamically changing environments. Improving prior methods that rely on static assumptions or simplistic trajectory interpolation, D-MG produces smooth, realistic, and task-consistent Cartesian trajectories that adapt in real time to changes in object poses, robot states, or scene geometry during task execution. Our method supports a broad range of scenarios — including scene layouts, object instances, and robot configurations — making it suitable for both static and highly dynamic manipulation tasks. We show that robot agents trained via imitation learning on D-MG generated data achieve strong performance across long-horizon and contact-rich benchmarks, including tasks like cube stacking and placing mugs in drawers, even under unpredictable environment changes. By eliminating the need for extensive human demonstrations and enabling generalization in dynamic settings, D-MG offers a powerful and efficient alternative to manual data collection, paving the way toward scalable, autonomous robot learning.
+<p align="center">
+  <img src="dmg_logo.png" width="180" alt="DynaMimicGen Logo">
+</p>
 
-![DynaMimicGen Logo](dmg_logo.png)
+<h1 align="center">DynaMimicGen (D-MG)</h1>
+<h3 align="center">A Data Generation Framework for Robot Learning of Dynamic Tasks</h3>
 
-# Spacemouse instructions
-This repository is intended to be used with a 3dconnexion spacemouse to record the demonstration
-To install the spacemouse dependencies, run:
+<p align="center">
+  <a href="https://arxiv.org/abs/2511.16223">
+    <img src="https://img.shields.io/badge/arXiv-2511.16223-b31b1b?logo=arxiv&logoColor=white" height="28">
+  </a>
+  <a href="https://github.com/automation-robotics-machines/DynaMimicGen">
+    <img src="https://img.shields.io/badge/GitHub-Repository-181717?logo=github&logoColor=white" height="28">
+  </a>
+</p>
+
+---
+
+## Abstract
+
+Learning robust manipulation policies typically requires large and diverse datasets, the collection of which is time-consuming, labor-intensive, and often impractical for dynamic environments. **DynaMimicGen (D-MG)** is a scalable dataset generation framework that enables policy training from minimal human supervision while uniquely supporting dynamic task settings.
+
+Given only a few human demonstrations, D-MG:
+1. Segments demonstrations into meaningful sub-tasks
+2. Leverages **Dynamic Movement Primitives (DMPs)** to adapt behaviors to novel, dynamically changing environments
+3. Produces smooth, realistic, and task-consistent **Cartesian trajectories** that adapt in real time to changes in object poses, robot states, or scene geometry
+
+Agents trained via imitation learning on D-MG-generated data achieve strong performance on long-horizon and contact-rich benchmarks — even under unpredictable environment changes.
+
+---
+
+## Requirements
+
+- Python 3.8+
+- CUDA 12.8 (for GPU training)
+- A [3DConnexion SpaceMouse](https://3dconnexion.com/) (for recording new demonstrations)
+
+---
+
+## Installation
+
+### 1. Clone & Install D-MG
 
 ```bash
-pip install pyspacemouse
-pip install hid
-sudo apt-get install libhidapi-dev
-```
-Each time a new terminal is started, run the following command:
-```bash
-sudo chmod 777 /dev/hidraw*
-```
-
-# venv installation steps
-```bash
-cd DynaMimicGen 
+git clone https://github.com/automation-robotics-machines/DynaMimicGen.git
+cd DynaMimicGen
 pip install -e .
 ```
 
-# PyTorch & torchvsion installation with CUDA 12.8
+### 2. PyTorch with CUDA 12.8
+
 ```bash
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 ```
 
-# Install [robomimic](https://robomimic.github.io/)
+### 3. Install Dependencies
+
+**[robomimic](https://robomimic.github.io/)**
 ```bash
 cd DynaMimicGen
 git clone https://github.com/ARISE-Initiative/robomimic.git
-git checkout v0.5
-cd robomimic/
+cd robomimic && git checkout v0.5
 pip install -e .
 ```
 
-# Install [mimicgen](https://mimicgen.github.io/)
+**[MimicGen](https://mimicgen.github.io/)**
 ```bash
 cd DynaMimicGen
 git clone https://github.com/NVlabs/mimicgen.git
-cd mimicgen/
-pip install -e .
+cd mimicgen && pip install -e .
 ```
 
-# Install [robosuite-task-zoo](https://github.com/ARISE-Initiative/robosuite-task-zoo)
+**[robosuite-task-zoo](https://github.com/ARISE-Initiative/robosuite-task-zoo)**
 ```bash
 cd DynaMimicGen
 git clone https://github.com/ARISE-Initiative/robosuite-task-zoo.git
-cd robosuite-task-zoo
-pip install -e .
+cd robosuite-task-zoo && pip install -e .
 ```
 
-# Playback demonstration
+### 4. SpaceMouse Setup
+
+Install drivers for recording human demonstrations:
+
 ```bash
+pip install pyspacemouse hid
+sudo apt-get install libhidapi-dev
+```
+
+> ⚠️ **Every time you open a new terminal**, run:
+> ```bash
+> sudo chmod 777 /dev/hidraw*
+> ```
+
+---
+
+## Usage
+
+### Playback
+
+```bash
+# Playback human demonstrations
 python dmg/scripts/playback_human_demonstrations.py --directory <dir-name>
-```
 
-# Playback generated trajectories
-```bash
+# Playback DMP-generated trajectories
 python dmg/scripts/playback_human_demonstrations.py --directory <dir-name> --play-dmp
 ```
 
-# Generate a new dataset with the provided demonstrations:
-Substitute <dir-name> with one of the followings (which are the name of the folders in dmg/demos/hdf5)
-```bash
-python dmg/scripts/generate_dataset.py --directory <dir-name> --num-dmp 10 --render # Generate a dataset of 10 trajectories with scene rendering
-```
-The previous command will create a folder within the <dir-name> called dmp, in which a demo.hdf5 file will store all the generated trajectories.
+---
 
-# Record a new trajectory
-Alternatively, you can record a new trajectory on your own (more treaky procedure):
+### Generate a Dataset
+
+Use one of the provided demo folders under `dmg/demos/hdf5/` as `<dir-name>`:
+
 ```bash
-# Collect human demo with space mouse
+python dmg/scripts/generate_dataset.py \
+  --directory <dir-name> \
+  --num-dmp 10 \
+  --render
+```
+
+This creates a `dmp/demo.hdf5` file inside `<dir-name>` containing all generated trajectories.
+
+Then extract observations:
+
+```bash
+python robomimic/robomimic/scripts/conversion/convert_robosuite.py \
+  --dataset dmg/demos/hdf5/<dir-name>/dmp/demo.hdf5
+
+python robomimic/robomimic/scripts/dataset_states_to_obs.py \
+  --dataset dmg/demos/hdf5/<dir-name>/dmp/demo.hdf5 \
+  --output_name image.hdf5 \
+  --done_mode 2 \
+  --camera_names agentview robot0_eye_in_hand \
+  --camera_height 84 --camera_width 84 \
+  --exclude-next-obs
+```
+
+---
+
+### Record a New Demonstration
+
+> ⚠️ This requires a SpaceMouse and is more involved than using the provided demos.
+
+```bash
+# Step 1 — Collect human demonstration
 python dmg/scripts/collect_human_demonstations.py --environment <env-name>
-# Convert to robomimic
-python robomimic/robomimic/scripts/conversion/convert_robosuite.py --dataset dmg/demos/hdf5/<dir-name>/demo.hdf5
-python robomimic/robomimic/scripts/dataset_states_to_obs.py        --dataset dmg/demos/hdf5/<dir-name>/demo.hdf5 --output_name image.hdf5 --done_mode 2 --camera_names agentview robot0_eye_in_hand --camera_height 84 --camera_width 84 --exclude-next-obs
-# Annotate subtasks manually
-python dmg/scripts/annotate_subtasks.py -directory <dir-name>
+
+# Step 2 — Convert to robomimic format
+python robomimic/robomimic/scripts/conversion/convert_robosuite.py \
+  --dataset dmg/demos/hdf5/<dir-name>/demo.hdf5
+
+# Step 3 — Extract observations
+python robomimic/robomimic/scripts/dataset_states_to_obs.py \
+  --dataset dmg/demos/hdf5/<dir-name>/demo.hdf5 \
+  --output_name image.hdf5 \
+  --done_mode 2 \
+  --camera_names agentview robot0_eye_in_hand \
+  --camera_height 84 --camera_width 84 \
+  --exclude-next-obs
+
+# Step 4 — Annotate sub-tasks manually
+python dmg/scripts/annotate_subtasks.py --directory <dir-name>
 ```
 
-# Extract generated dataset
+---
+
+### Train a Policy
+
+**Behavior Cloning (BC-RNN)**
+
 ```bash
-python robomimic/robomimic/scripts/conversion/convert_robosuite.py --dataset dmg/demos/hdf5/<dir-name>/dmp/demo.hdf5
-python robomimic/robomimic/scripts/dataset_states_to_obs.py        --dataset dmg/demos/hdf5/<dir-name>/dmp/demo.hdf5 --output_name image.hdf5 --done_mode 2 --camera_names agentview robot0_eye_in_hand --camera_height 84 --camera_width 84 --exclude-next-obs
+# Image-based
+python robomimic/robomimic/scripts/train.py \
+  --config dmg/configs/<task-name>/bc_configs/image/bc_rnn.json
+
+# Low-dimensional
+python robomimic/robomimic/scripts/train.py \
+  --config dmg/configs/<task-name>/bc_configs/low_dim/bc_rnn.json
 ```
 
-# Run training with Robomimic's Behavior Cloning
+**Diffusion Policy**
+
 ```bash
-python robomimic/robomimic/scripts/train.py --config dmg/configs/<task-name>/bc_configs/image/bc_rnn.json # image
-python robomimic/robomimic/scripts/train.py --config dmg/configs/<task-name>/bc_configs/low_dim/bc_rnn.json # low-dim
+# Image-based
+python robomimic/robomimic/scripts/train.py \
+  --config dmg/configs/<task-name>/dp_configs/image/dp.json
+
+# Low-dimensional
+python robomimic/robomimic/scripts/train.py \
+  --config dmg/configs/<task-name>/dp_configs/low_dim/dp.json
 ```
 
-# Run training with Robomimic's Diffusion Policy
+---
+
+### Evaluate a Trained Agent
+
 ```bash
-python robomimic/robomimic/scripts/train.py --config dmg/configs/<task-name>/dp_configs/image/dp.json # image
-python robomimic/robomimic/scripts/train.py --config dmg/configs/<task-name>/dp_configs/low_dim/dp.json # low-dim
+source dmg/bash/run_trained.sh <dir-name> <type> <ckpt-name> <horizon> <folder_name>
 ```
 
-# Evaluate trained agent
+**Example:**
 ```bash
-source dmg/bash/run_trained.sh <dir-name> <type> <ckpt-name> <horizon> <folder_name> # example: source dmg/bash/run_trained_agents.sh Stack_D0_new low_dim 1600 700 20250723221119
+source dmg/bash/run_trained_agents.sh Stack_D0_new low_dim 1600 700 20250723221119
+```
+
+---
+
+## Citation
+
+If you use **DynaMimicGen** in your work, please cite:
+
+```bibtex
+@article{pomponi2025dynamimicgen,
+  title     = {DynaMimicGen: A Data Generation Framework for Robot Learning of Dynamic Tasks},
+  author    = {Pomponi, Vincenzo and Franceschi, Paolo and Baraldo, Stefano and
+               Roveda, Loris and Avram, Oliver and Gambardella, Luca Maria and Valente, Anna},
+  journal   = {arXiv preprint arXiv:2511.16223},
+  year      = {2025}
+}
 ```
