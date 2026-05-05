@@ -205,6 +205,15 @@ source dmg/bash/run_trained_agents.sh Stack_D0_new low_dim 1600 700 202507232211
 
 ---
 
+## Reproducing the Paper Results
+
+Detailed instructions, configurations, and benchmark assets required to fully reproduce the experiments reported in the paper are available upon request.
+
+For reproducibility inquiries, please contact:
+
+**Vincenzo Pomponi** — vincenzo.pomponi@supsi.ch
+---
+
 ## Citation
 
 If you use **DynaMimicGen** in your work, please cite:
